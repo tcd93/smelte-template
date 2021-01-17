@@ -4,7 +4,8 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import smelte from 'smelte/rollup-plugin-smelte';
-import css from 'rollup-plugin-css-only'
+import css from 'rollup-plugin-css-only';
+import babel from "@rollup/plugin-babel";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -51,6 +52,28 @@ export default {
 			darkMode: true
 		}),
 
+		/*for IE11... but support is VERY limited (it's best that you don't use IE at all)*/
+        babel({
+          extensions: [".js", ".mjs", ".html", ".svelte"],
+          exclude: ["node_modules/@babel/**", "node_modules/core-js-pure/**"],
+          babelHelpers: "runtime",
+          presets: [
+            [
+              "@babel/preset-env",
+              {
+                targets: '> 0.25%, not dead, IE 11',
+              }
+            ]
+          ],
+          plugins: [
+            '@babel/plugin-syntax-dynamic-import',
+            ['@babel/plugin-transform-runtime', {
+			  useESModules: true,
+			  corejs: 3
+            }]
+          ],
+		}),
+		
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In
 		// some cases you'll need additional configuration -
